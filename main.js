@@ -24,15 +24,23 @@ const tickerCollection= client.db("cs361_databases").collection("tickers");
 // GET request routes
 app.get('/', (req,res) => {
     res.render('login');
+    return;
+})
+
+app.get('/login', (req,res) => {
+    res.render('login');
+    return;
 })
 
 // Remember to change this route back to 'login' page, so that everyone has to log in to reach dashboard!!
 app.get('/dashboard', (req,res) => {
     res.render('login');
+    return;
 })
 
 app.get('/register', (req,res) => {
     res.render('register');
+    return;
 })
 
 
@@ -102,6 +110,11 @@ app.post('/dashboard', async (req, res) => {
                     context.user = req.body['email'];
                     // find user data from database
                     var findUserData = await userCollection.find({email: req.body['email']}).toArray();
+                    // if user has no stocks (new user)
+                    if (findUserData.length == 0){
+                        res.render('dashboard', context);
+                        return;
+                    }
                     for(i = 0; i < findUserData[0]['data'].length; i++){
                         completeData = findUserData[0]['data'][i];
                         completeData.user = req.body['email'];
@@ -232,7 +245,7 @@ app.post('/dashboard', async (req, res) => {
         } else {
             direction = false;
         }
-        // conevert price string to float
+        // convert price string to float
         price = parseFloat(req.body['price']);
         try{
             // add stock to user collection
@@ -261,6 +274,37 @@ app.post('/dashboard', async (req, res) => {
         }
     }
     return;
+})
+
+
+app.post('/register', async (req, res) => {
+    var context = {}
+    try {
+        const fetchRepsonse = await fetch('http://localhost:4004/register', {
+            method: "POST",
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: req.body['email'],
+                password: req.body['password'], 
+                collection: 'StockUser'
+            })
+        })
+        const data = await fetchRepsonse.json()
+        console.log(data);
+        if (data['Already_registered'] == true){
+            context.alert = true;
+            res.render('register', context);
+        } else {
+            await userCollection.insertOne({email: req.body['email'], data:[]});
+            res.render('login');
+        }
+        return;
+    } catch (e) {
+        return console.log(e);
+    }
 })
 
 app.listen(Port, () => console.log('Server is running'));
