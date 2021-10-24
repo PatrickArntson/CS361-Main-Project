@@ -12,48 +12,65 @@
             </tr>
         </thead>
         <tbody>
+            {{#each userData}}
             <tr>
                 <form method="POST" action="/dashboard">
-                    <td name="ticker" value="MFST">MFST</td>
                     <td>
-                        <input class="row-input-box" type="number" name="Price" step="0.01" min="0.01" value="300.00"/>
+                        {{this.ticker}}
+                        <input name="ticker" value="{{this.ticker}}" hidden>
+                    </td>
+                    <td>
+                        <input class="row-input-box" type="number" name="price" step="0.01" min="0.01" value="{{this.price}}"/>
                     </td>
                     <td>
                         <div class="switch-toggle">
-                            <input type="checkbox" id="1" name="direction">
-                            <label for="1"></label>
+                            {{#if direction}}
+                            <input type="checkbox" id="{{this.ticker}}" name="direction"checked> 
+                            {{else}}
+                            <input type="checkbox" id="{{this.ticker}}" name="direction"> 
+                            {{/if}}
+                            <label for="{{this.ticker}}"></label>
                         </div> 
                     </td>
                     <td>
-                        <button type="submit" name="save" value="test" class="btn btn-secondary" ><i class="bi bi-pencil-fill"></i>Save Changes</button>
-                        <button type="submit" name="delete" value="test" class="btn btn-danger" ><i class="bi bi-trash"></i>Delete</button>
+                        <button type="submit" name="save" value="{{this.user}}" class="btn btn-secondary" ><i class="bi bi-pencil-fill"></i>Save Changes</button>
+                        <button type="submit" name="delete" value="{{this.user}}" class="btn btn-danger" ><i class="bi bi-trash"></i>Delete</button>
                     </td>
                 </form>
             </tr>
-
+            {{/each}}
             <tr>
                 <form method="POST" action="/dashboard">
-                    <td name="ticker" value="AAPL">AAPL</td>
                     <td>
-                        <input class="row-input-box" type="number" name="Price" step="0.01" min="0.01" value="300.00"/>
+                        <input class="row-input-box" type="text" name="ticker">
+                    </td>
+                    <td>
+                        <input class="row-input-box" type="number" name="price" step="0.01" min="0.01"/>
                     </td>
                     <td>
                         <div class="switch-toggle">
-                            <input type="checkbox" id="2" name="direction" checked>
-                            <label for="2"></label>
-                        </div>
+                            <input type="checkbox" id="direction" name="direction" checked> 
+                            <label for="direction"></label>
+                        </div> 
                     </td>
                     <td>
-                        <button type="submit" name="save" value="test" class="btn btn-secondary" ><i class="bi bi-pencil-fill"></i>Save Changes</button>
-                        <button type="submit" name="delete" value="test" class="btn btn-danger" ><i class="bi bi-trash"></i>Delete</button>
+                        <button type="submit" name="add-stock" value="{{ user }}" class="btn btn-secondary"> Add + </button>
                     </td>
                 </form>
             </tr>
         </tbody>
     </table>
+    {{#if alert2}} <p class="alert"> Stock already in your collection </p> {{/if}}
+    {{#if alert1}} <p class="alert"> Please provide ticker symbol </p> {{/if}}
 </div>
 
 <style>
+
+.alert {
+    color: red;
+    font-size: 16;
+}
+
 
 h2 {
     color: #f8f9fa;

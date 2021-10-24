@@ -1,0 +1,32 @@
+{
+  "name": "main_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "axios": "^0.23.0",
+    "cross-fetch": "^3.1.4",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.4",
+    "express-session": "^1.17.2",
+    "mongodb": "^4.1.3",
+    "mongoose": "^6.0.12",
+    "node-fetch": "^3.0.0",
+    "nodemon": "^2.0.14"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PatrickArntson/https---github.com-PatrickArntson-CS361-Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PatrickArntson/https---github.com-PatrickArntson-CS361-Project/issues"
+  },
+  "homepage": "https://github.com/PatrickArntson/https---github.com-PatrickArntson-CS361-Project#readme"
+}
