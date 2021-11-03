@@ -1,6 +1,10 @@
 <div class="container"> 
     <div class="header">
-        <h2>Your Watch List</h2>
+        <h2> Welcome to Stock Alert!</h2>
+    </div>
+    <div>
+        <p class="intro">Please enter a valid ticker symbol of the stock of your choosing, a target price, and whether that target price is a floor or a ceiling! <br> If your stock hits your target price, you will immediately be emailed a price alert! <br> <br> If you wish to change your notification settings about a specific stock, please hit 'save changes' after updating the price info</p>
+        <h3>Your Watch List</h3>
     </div>
     <table class="table table-dark table-hover">
         <thead>
@@ -62,6 +66,14 @@
     </table>
     {{#if alert2}} <p class="alert"> Stock already in your collection </p> {{/if}}
     {{#if alert1}} <p class="alert"> Please provide ticker symbol </p> {{/if}}
+
+    {{!-- <a class="logOut" href="/login"  title="logOut">Log Out</a> --}}
+    <div class="logOut">
+        <form method="get" action="/login">
+            <button type="submit" name="logOut" class="btn btn-danger" >Log Out</button>
+        </form>
+    </div>
+
 </div>
 
 <style>
@@ -71,8 +83,36 @@
     font-size: 16;
 }
 
+.logOut {
+    margin-top: 75px;
+    display: flex;
+    justify-content: left;
+    align-items: left;
+}
+
+
+
+.intro {
+    color: #f8f9fa;
+    background-color: #5c636a;
+    font-size: 17px;
+    font-family: sans-serif;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin-left: 100px;
+    margin-right: 100px;
+}
 
 h2 {
+    color: #f8f9fa;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    margin-left: -25px;
+}
+
+h3 {
     color: #f8f9fa;
     margin-top: 50px;
     margin-bottom: 25px;

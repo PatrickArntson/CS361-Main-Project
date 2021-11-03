@@ -145,7 +145,7 @@ app.post('/dashboard', async (req, res) => {
         } else {
             direction = false;
         }
-        // conevert price string to float
+        // convert price string to float
         price = parseFloat(req.body['price']);
         try {
             await userCollection.updateOne({email: req.body['save'], 'data.ticker' : req.body['ticker']}, { $set: {'data.$.ticker': req.body['ticker'],  'data.$.price': price, 'data.$.direction': direction}});
@@ -183,6 +183,7 @@ app.post('/dashboard', async (req, res) => {
             // render dashboard with users data
             console.log(context);
             res.render('dashboard', context);
+            // decrease number of users for ticker in ticker Collection
             var tickersVerification = await tickerCollection.find({ticker: req.body['ticker'].toUpperCase()}, {numOfUsers: 1}).toArray();
             if (tickersVerification[0]['numOfUsers'] == 1){
                 await tickerCollection.deleteOne({ticker: req.body['ticker'].toUpperCase()});
@@ -262,6 +263,7 @@ app.post('/dashboard', async (req, res) => {
             // render dashboard with users data
             console.log(context);
             res.render('dashboard', context);
+            // increase number of users for ticker in ticker Collection
             var tickersVerification = await tickerCollection.find({ticker: req.body['ticker'].toUpperCase()}).toArray();
             if (tickersVerification.length == 1){
                 await tickerCollection.updateOne({ticker: req.body['ticker'].toUpperCase()}, { $inc: {numOfUsers: 1}});
