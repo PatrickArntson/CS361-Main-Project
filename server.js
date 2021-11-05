@@ -17,6 +17,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
     console.log('database is sucessfuly connected')
 });
+// Database Collections
 const userCollection = client.db("cs361_databases").collection("users");
 const tickerCollection= client.db("cs361_databases").collection("tickers");
 
@@ -99,13 +100,17 @@ app.post('/dashboard', async (req, res) => {
                 })
                 const data = await fetchRepsonse.json()
                 console.log(data);
-                if(data['User_not_found'] == true){
+                if (data['errorMessage']){
+                    context.alert2 = true;
+                    res.render('login', context);
+                }
+                if(data['userNotFound'] == true){
                     context.alert = true;
                     console.log(context);
                     res.render('login', context);
                     return;
                 }
-                if(data['Successful_login'] == true){
+                if(data['successfulLogin'] == true){
                     context.userData = [];
                     context.user = req.body['email'];
                     // find user data from database
@@ -125,13 +130,16 @@ app.post('/dashboard', async (req, res) => {
                     res.render('dashboard', context);
                     return;
                 }
-                else if(data['Successful_login'] == false){
+                else if(data['successfulLogin'] == false){
                     console.log(req.body.password);
-                    res.render('login');
+                    context.alert = true;
+                    res.render('login', context);
                     return;
                 }
 
             } catch (e) {
+                context.alert2 = true;
+                res.render('login', context);
                 return console.log(e);
             }
         }
@@ -296,7 +304,11 @@ app.post('/register', async (req, res) => {
         })
         const data = await fetchRepsonse.json()
         console.log(data);
-        if (data['Already_registered'] == true){
+        if (data['errorMessage']){
+            context.alert2 = true;
+            res.render('register', context);
+        }
+        if (data['alreadyRegistered'] == true){
             context.alert = true;
             res.render('register', context);
         } else {
@@ -305,6 +317,8 @@ app.post('/register', async (req, res) => {
         }
         return;
     } catch (e) {
+        context.alert2 = true;
+        res.render('login', context);
         return console.log(e);
     }
 })
