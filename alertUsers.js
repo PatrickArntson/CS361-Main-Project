@@ -13,15 +13,15 @@ const uri = process.env.DATABASE_URL;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     console.log('database is sucessfuly connected')
-    getStockData();
-    emailUsers();
+    main();
+    setInterval(function(){main()}, 30000);
 });
 const userCollection = client.db("cs361_databases").collection("users");
 const tickerCollection= client.db("cs361_databases").collection("tickers");
 
 
 // global for checking stock prices. Ex. { ticker1: value, ticker2: value}
-var stockPriceData = { AAPL: 205, MSFT: 301};
+var stockPriceData = {};
 
 // Set up emailer
 const transporter = nodemailer.createTransport({
@@ -39,22 +39,50 @@ var mailOptions = {
 };
 
 
-// function to retrieve stock tickers from database, retrieve stock prices from API, write stock prices to stockPriceData
-async function getStockData() {
-    // get array of all current tickers
+// main function that runs every 30 seconds 
+async function main(){
     try {
+        var getData = await getStockData();
+        var sendAlert = await emailUsers();
+        getData;
+        sendAlert;   
+    } catch (e){
+        return console.log(e);
+    }
+}
+
+
+// function to retrieve stock tickers from database, retrieve stock prices from API, write stock prices to stockPriceData
+async function getStockData(){
+    // get array of all current tickers
+    stockPriceData = {};
+    try {
+        // get all current stock tickers that are being watched
         var findStockData = await tickerCollection.find().toArray();
-        // call Josh's micoservice on all tickers in the findStockData array
         for(let i = 0; i < findStockData.length; i++){
+            // call Josh's micoservice on all tickers in the findStockData array
+            const fetchRepsonse = await fetch('http://flip2.engr.oregonstate.edu:4797/api/v1/8242315161718/scrape/yahoofinance', {
+                    method: "POST",
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ticker: findStockData[i]['ticker']
+                    })
+                })
+            const data = await fetchRepsonse.json();
             // add stock name and price to global object stockPriceData
-            // stockPriceData[findStockData[i]] = {joshsAPI(findStockData[i])}
-            console.log(findStockData[i]['ticker']);
+            var price = data['current-price'].split(',').join('');
+            price = parseFloat(price);
+            stockPriceData[findStockData[i]['ticker']] = price;
         }
     } catch (err){
         console.log(err);
     }
+    console.log(stockPriceData);
     return;
-}
+};
 
 // Once getStockData() has been run, this function emails alerts to users if their stock targets have hit
 async function emailUsers(){
@@ -86,23 +114,27 @@ async function emailUsers(){
                     }
                 }
                 var messageForUser = '';
+                var count = 0;
                 for (alert in alertForUser){
                     // might not be necessary if API brings back strings for prices instead of ints
                     var stringPrice = alertForUser[alert].toString();
                     messageForUser += (`${alert} hit your target! Current price is ${stringPrice} \n`);
+                    count++;
                 }
+                
+                if (count > 0){
+                    // Email alerts to user
+                    mailOptions['to'] = findUserData[i]['email'];
+                    mailOptions['text'] = messageForUser;
 
-                // Email alerts to user
-                mailOptions['to'] = findUserData[i]['email'];
-                mailOptions['text'] = messageForUser;
-
-                await transporter.sendMail(mailOptions, function(err, data){
-                    if (err){
-                        console.log(err);
-                    } else {
-                        console.log('Email has sent');
-                    }
-                });
+                    await transporter.sendMail(mailOptions, function(err, data){
+                        if (err){
+                            console.log(err);
+                        } else {
+                            console.log('Email has sent');
+                        }
+                    });
+                }
             }
         }
     } catch (err)  {

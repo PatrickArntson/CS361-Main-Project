@@ -4,6 +4,7 @@ const exphbs = require('express-handlebars');
 const MongoClient = require('mongodb').MongoClient;
 const Port = process.env.port || 4000;
 const fetch = require('cross-fetch');
+const alertUsers = require('./alertUsers');
 require('dotenv').config();
 
 app.use(express.urlencoded({ extended: true}));
@@ -20,6 +21,7 @@ client.connect(err => {
 // Database Collections
 const userCollection = client.db("cs361_databases").collection("users");
 const tickerCollection= client.db("cs361_databases").collection("tickers");
+
 
 
 // GET request routes
@@ -45,38 +47,6 @@ app.get('/register', (req,res) => {
 })
 
 
-// just for remembering mongodb queries
-// app.get('/dashboard-special', async(req,res) => {
-//     console.log('started');
-//     try {
-//         await userCollection.insertOne({email: 'tester', data:[{ticker: 'MSFT', price: 301.50, direction: 'Above'}]});
-//         // await userCollection.insertOne({email: 'tester', data:[{ticker: 'AAPL', price: 155.28, direction: 'Below'}]});
-//         // await userCollection.insertOne({email: 'tester', data:[{ticker: 'TSLA', price: 3423.55, direction: 'Above'}]});
-//         // var findResult = await userCollection.find({}).toArray();
-//         // console.log('Found documents =>', findResult);
-//         // await userCollection.updateOne({email: 'test2@123.com', 'data.ticker' : 'AAPL'}, { $set: {"data.$.ticker": "MSFT"}});
-//         await userCollection.updateOne({email: 'tester'}, { $addToSet : {data : {'ticker': 'TSLA', 'price': 2000, 'direction': 'above'}}}, false, true);
-//         await userCollection.updateOne({email: 'tester'}, { $addToSet : {data : {'ticker': 'AAPL', 'price': 200, 'direction': 'Below'}}}, false, true);
-//         // var findTicker = await tickerCollection.find({}).toArray();
-//         var findResult = await userCollection.find({email: "tester"}).toArray();
-//         // for(i = 0; i < findResult[0]['data'].length; i++){
-//         //     console.log(findResult[0]['data'][i]['ticker']);
-//         // }
-//         console.log('Found documents =>', findResult[0]['data']);
-//         // console.log('Found tickers => ', findTicker);
-//         // await userCollection.updateOne({email: 'test2@123.com', 'data.ticker' : 'MSFT'}, { $set: {'data.$.ticker': 'AAPL',  'data.$.price': 400, 'data.$.direction': 'Below'}});
-//         // await userCollection.deleteOne({email: 'test3@123.com'});
-//         // findResult = await userCollection.find({}).toArray();
-//         // console.log('Found documents =>', findResult)
-//     } catch (err) {
-//         console.log('error')
-//     }
-//     console.log('finished');
-//     res.render('dashboard');
-//     return;
-// })
-
-
 // POST request routes
 app.post('/dashboard', async (req, res) => {
     var context = {};
@@ -86,7 +56,7 @@ app.post('/dashboard', async (req, res) => {
         authenicate = true;
         loginService = async () => {
             try {
-                const fetchRepsonse = await fetch('http://localhost:4004/login', {
+                const fetchRepsonse = await fetch('http://flip3.engr.oregonstate.edu:7070/login', {
                     method: "POST",
                     headers: {
                         Accept: 'application/json',
@@ -290,7 +260,7 @@ app.post('/dashboard', async (req, res) => {
 app.post('/register', async (req, res) => {
     var context = {}
     try {
-        const fetchRepsonse = await fetch('http://localhost:4004/register', {
+        const fetchRepsonse = await fetch('http://flip3.engr.oregonstate.edu:7070/register', {
             method: "POST",
             headers: {
                 Accept: 'application/json',
@@ -322,5 +292,6 @@ app.post('/register', async (req, res) => {
         return console.log(e);
     }
 })
+
 
 app.listen(Port, () => console.log('Server is running'));
