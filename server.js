@@ -35,7 +35,6 @@ app.get('/login', (req,res) => {
     return;
 })
 
-// Remember to change this route back to 'login' page, so that everyone has to log in to reach dashboard!!
 app.get('/dashboard', (req,res) => {
     res.render('login');
     return;

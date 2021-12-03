@@ -8,7 +8,7 @@ require('dotenv').config();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// connect to database
+// connect to database and run main program every 30 seconds
 const uri = process.env.DATABASE_URL;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
@@ -22,6 +22,7 @@ const tickerCollection= client.db("cs361_databases").collection("tickers");
 
 // global for checking stock prices. Ex. { ticker1: value, ticker2: value}
 var stockPriceData = {};
+
 
 // Set up emailer
 const transporter = nodemailer.createTransport({
@@ -42,13 +43,30 @@ var mailOptions = {
 // main function that runs every 30 seconds 
 async function main(){
     try {
-        var getData = await getStockData();
-        var sendAlert = await emailUsers();
-        getData;
-        sendAlert;   
+        // if the US stock market is currently open
+        if (marketOpen()){
+            var getData = await getStockData();
+            var sendAlert = await emailUsers();
+            getData;
+            sendAlert;  
+        } else {
+            console.log('market is closed');
+        }
     } catch (e){
         return console.log(e);
     }
+}
+
+
+// checks day and time to see if market is open
+function marketOpen(){
+    let date_ob = new Date();
+    let time = date_ob.getHours() + (date_ob.getMinutes()/60);
+    let day = date_ob.getDay();
+    if ((6.5 <= time && time < 13) && (1 <= day && day <= 5)){
+        return true;
+    }
+    return false
 }
 
 
@@ -72,8 +90,12 @@ async function getStockData(){
                     })
                 })
             const data = await fetchRepsonse.json();
+            
+            // the commented code below is for when the josh's microservice sometimes sends strings instead of floats
+            // var price = data['current-price'].split(',').join('');
+
             // add stock name and price to global object stockPriceData
-            var price = data['current-price'].split(',').join('');
+            var price = data['current-price'];
             price = parseFloat(price);
             stockPriceData[findStockData[i]['ticker']] = price;
         }
@@ -83,6 +105,7 @@ async function getStockData(){
     console.log(stockPriceData);
     return;
 };
+
 
 // Once getStockData() has been run, this function emails alerts to users if their stock targets have hit
 async function emailUsers(){

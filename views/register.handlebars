@@ -3,11 +3,13 @@
         <div class="col-md-6">
             <div class="card">
                 <form method="post" action="/Register" class="box">
-                    <h1>Sign Up</h1>
+                    <h1>Stock Alert</h1>
+                    <br>
+                    <h3>Sign Up</h3>
                     <p class="text-muted"> Please enter your email and a password</p>
                     {{#if alert}} <p class="alert"> Email already in use </p> {{/if}}
                     {{#if alert2}} <p class="alert"> Server issues <br> We apologize for the inconvenience <br> Please try checking back later</p> {{/if}}
-                    <input type="text" name="email" placeholder="Email"> 
+                    <input type="email" name="email" placeholder="Email"> 
                     <input type="password" name="password" placeholder="Password"> 
                     <input type="submit" name="Register" value="Register">
                     <p class="text-muted"> Already have an account? </p>
@@ -52,7 +54,7 @@
     margin-top: 100px
 }
 
-.box input[type="text"],
+.box input[type="email"],
 .box input[type="password"] {
     border: 0;
     background: none;
@@ -70,11 +72,16 @@
 
 .box h1 {
     color: white;
+    font-weight: 500
+}
+
+.box h3 {
+    color: white;
     text-transform: uppercase;
     font-weight: 500
 }
 
-.box input[type="text"]:focus,
+.box input[type="email"]:focus,
 .box input[type="password"]:focus {
     width: 300px;
     border-color: #2ecc71
