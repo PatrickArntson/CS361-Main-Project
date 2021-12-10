@@ -7,3 +7,6 @@ This code runs on the Oreogn State Engineering servers and utilizes my [user log
 as well as one of my classmate's web-scraping microservice.
 
 
+Since the website currently lives on the Oregon State Engineering servers, here is a [video demonstration of the website](https://youtu.be/nr_OebMfb-Y).
+
+
