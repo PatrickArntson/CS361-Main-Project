@@ -139,7 +139,6 @@ async function emailUsers(){
                 var messageForUser = '';
                 var count = 0;
                 for (alert in alertForUser){
-                    // might not be necessary if API brings back strings for prices instead of ints
                     var stringPrice = alertForUser[alert].toString();
                     messageForUser += (`${alert} hit your target! Current price is ${stringPrice} \n`);
                     count++;
